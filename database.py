@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,render_template
+from flask import Flask, jsonify, render_template, request
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
@@ -14,8 +14,8 @@ def home_page():
 
 
 @app.route('/list_accounts', methods = ['GET'])
-def list_all_accounts():
-    loginFinder = loginInstance.db.login
+def list_all_students():
+    loginFinder = paymentInstance.db.payment
     result = []
     for m in loginFinder.find():
         member = {}
@@ -27,7 +27,7 @@ def list_all_accounts():
 
 
 @app.route('/list_canteens', methods = ['GET'])
-def list_all_accounts():
+def list_all_canteens():
     canteenFinder = adminInstance.db.admin
     result = []
     for m in canteenFinder.find():
@@ -41,7 +41,7 @@ def list_all_accounts():
 @app.route('/add_account',methods = ['POST'])
 def add_account():
     response = {}
-    accountAdder = loginInstance.db.login
+    accountAdder = paymentInstance.db.payment
     data = request.get_json()
     try:
         accountAdder.insert({'roll':data['roll'], 'balance':data['balance']})
@@ -101,7 +101,7 @@ def login():
 
 @app.route("/pay",methods = ['POST'])
 def pay():
-
+    pass
 
 
 
@@ -109,4 +109,3 @@ def pay():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
