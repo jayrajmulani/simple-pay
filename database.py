@@ -31,9 +31,7 @@ def list_all_canteens():
     canteenFinder = adminInstance.db.admin
     result = []
     for m in canteenFinder.find():
-        canteen = {}
-        canteen['canteen'] = m['canteen']
-        result.append(canteen)
+        result.append(m['canteen'])
     return jsonify({'canteens':result})
 
 
@@ -56,47 +54,53 @@ def add_account():
 @app.route("/add_canteen", methods = ['POST'])
 def add_canteen_acc():
     adminAdder = adminInstance.db.admin
-    response = {}
-    data = request.get_json()
-    canteens = adminAdder.find({'canteen':data['canteen']}) 
-    len = 0
-    try:
-        for _ in canteens:
-            len += 1
-        if len == 0:
-            password = data['password']
-            adminAdder.insert({'canteen':data['canteen'], 'password':password})
-            response['code'] = 'OK'
-        else:
-            response['code'] = 'ALREADY EXISTS'
-    except:
-        response['code'] = 'ERROR'
-
-    return jsonify(response)
-
-
-@app.route("/login", methods = ['POST'])
-def login():
-    adminChecker = adminInstance.db.admin
-    response = {}
-    data = request.get_json()
+    data = dict(request.form)
     canteen = data['canteen']
     password = data['password']
+    canteens = adminAdder.find({'canteen':canteen}) 
+    print(data)
+    len = 0
+    for _ in canteens:
+        len += 1
+    if len == 0:
+        adminAdder.insert({'canteen':canteen, 'password':password})
+        success = True
+    else:
+        print('Already Exists')
+        success = False
+
+    # print('Exception')
+    # success = False
+    if success:
+        return render_template('main.html', val = canteen)
+    else:
+        return jsonify({"Error":"Database Entry Failed"})
+
+
+@app.route("/login_admin", methods = ['POST'])
+def login_admin():
+    adminChecker = adminInstance.db.admin
+    data = request.form
+    print(data)
+    canteen = data['canteen']
+    password = data['password']
+    success = False
     canteens = adminChecker.find({'canteen':data['canteen']})
     len = 0
     for _ in canteens:
         len += 1
     if len == 0:
-        response['code'] = 'NOT EXISTS'
+        success=False
     else:
         canteendata = adminChecker.find({'canteen':canteen})[0] 
-        print(password)
-        print(canteendata['password'])
         if canteendata['password'] == password:
-            response['code'] = 'OK'
+            success = True
         else:
-            response['code'] = 'INCORRECT'
-    return jsonify(response)
+            success = False
+    if success:
+        return render_template('main.html',val = canteen)
+    else:
+        return jsonify({"Error":"Login failed.. Check Username Password"})
 
 
 @app.route("/pay",methods = ['POST'])

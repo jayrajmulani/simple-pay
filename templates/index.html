@@ -28,7 +28,19 @@
   <link href="{{ url_for('static',filename='lib/ionicons/css/ionicons.min.css')}}" rel="stylesheet">
   <link href="{{ url_for('static',filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
   <link href="{{ url_for('static',filename='lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
-
+  <style>
+  input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  background-color:whitesmoke;
+  text-align: center;
+}
+  
+  </style>
   <script type="text/javascript">
 
     function myFunction() {
@@ -76,7 +88,6 @@
           <li class="active"><a href="#intro">Home</a></li>
           <li><a href="#register">Register/Login</a></li>
           <li><a href="#team">Team</a></li>
-          <li><a href="#footer">Contact Us</a></li>
         </ul>
       </nav><!-- .main-nav -->
 
@@ -115,14 +126,14 @@
           <!-- Icon -->
           <div class="fadeIn first">
             <h2> Add a new Canteen </h1>
-              <img src="{{ url_for('static',filename='img/canteen.png') }}" id="icon" alt="Canteen Icon" />
+              <img src="{{ url_for('static',filename='img/canteen5.jpg') }}" id="icon" alt="Canteen Icon" style="height: 50% ;width: 50%"/>
           </div>
 
           <!-- Login Form -->
-          <form>
+          <form action="http://localhost:5000/add_canteen" method="POST">
 
-            <input type="text" id="login" class="fadeIn second" name="canteen" placeholder="Enter Canteen">
-            <input type="text" id="password" class="fadeIn third" name="login" placeholder="Set a Password">
+            <input type="text" id="login" class="fadeIn second" name="canteen" placeholder="Enter Canteen" >
+            <input type="password" id="login" class="fadeIn third" name="password" placeholder="Set a Password">
             <input type="submit" class="fadeIn fourth" value="Add Canteen">
             <br>
           </form>
@@ -144,10 +155,10 @@
           </div>
 
           <!-- Login Form -->
-          <form>
+          <form action="http://localhost:5000/login_admin" method="POST">
 
             <input type="text" id="login" class="fadeIn second" name="canteen" placeholder="Enter Canteen">
-            <input type="text" id="password" class="fadeIn third" name="password" placeholder="Enter Password">
+            <input type="password" id="login" class="fadeIn third" name="password" placeholder="Enter Password">
             <input type="submit" class="fadeIn fourth" value="Log In">
             <br>
           </form>
@@ -173,9 +184,11 @@
       Team Section
     ============================-->
     <section id="team" class="section-bg">
-      <div class="container">
+      <div class="container" style="padding-top:100px;padding-bottom: 100px ">
         <div class="section-header">
           <h3>The rescue for the queue</h3>
+          <br>
+          
 
         </div>
 
@@ -190,10 +203,7 @@
                   <h4>Jayraj Mulani</h4>
                   <span>Cofounder, COO and Development Lead</span>
                   <div class="social">
-                    <a href=""><i class="fa fa-twitter"></i></a>
-                    <a href=""><i class="fa fa-facebook"></i></a>
-                    <a href=""><i class="fa fa-google-plus"></i></a>
-                    <a href=""><i class="fa fa-linkedin"></i></a>
+                    <a href="https://www.linkedin.com/in/jayraj-mulani-33b384127/"><i class="fa fa-linkedin"></i></a>
                   </div>
                 </div>
               </div>
@@ -208,10 +218,7 @@
                   <h4>Kalpan Tumdi</h4>
                   <span>Cofounder, CEO</span>
                   <div class="social">
-                    <a href=""><i class="fa fa-twitter"></i></a>
-                    <a href=""><i class="fa fa-facebook"></i></a>
-                    <a href=""><i class="fa fa-google-plus"></i></a>
-                    <a href=""><i class="fa fa-linkedin"></i></a>
+                    <a href="https://www.linkedin.com/in/kalpan-tumdi/"><i class="fa fa-linkedin"></i></a>
                   </div>
                 </div>
               </div>
