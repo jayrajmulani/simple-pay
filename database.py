@@ -2,11 +2,18 @@ from flask import Flask, jsonify, render_template, request
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
-
-
 paymentInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/payment")
 adminInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/admin")
+menuInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/menu")
 
+
+def get_menu():
+    menuInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/menu")
+    menu = []
+    for m in menuInstance.db.menu.find():
+        menu.append(m)
+    print(menu)
+    return menu
 
 @app.route('/')
 def home_page():
@@ -71,8 +78,11 @@ def add_canteen_acc():
 
     # print('Exception')
     # success = False
+    
     if success:
-        return render_template('main.html', val = canteen)
+        items = ['aaa','bbb','ccc']
+        print(len(items))
+        return render_template('main.html', val = canteen, items = items)
     else:
         return jsonify({"Error":"Database Entry Failed"})
 
@@ -86,19 +96,27 @@ def login_admin():
     password = data['password']
     success = False
     canteens = adminChecker.find({'canteen':data['canteen']})
-    len = 0
+    l = 0
     for _ in canteens:
-        len += 1
-    if len == 0:
+        l += 1
+    if l == 0:
         success=False
     else:
+
         canteendata = adminChecker.find({'canteen':canteen})[0] 
         if canteendata['password'] == password:
             success = True
         else:
             success = False
+    price = {}
     if success:
-        return render_template('main.html',val = canteen)
+        menu = []
+        for m in menuInstance.db.menu.find():
+            menu.append(m['name'])
+            price[m['']]
+        print(menu)
+        return render_template('main.html',items = menu,length = len(menu))
+        
     else:
         return jsonify({"Error":"Login failed.. Check Username Password"})
 
