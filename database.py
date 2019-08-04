@@ -95,6 +95,7 @@ def login_admin():
     canteen = data['canteen']
     password = data['password']
     success = False
+    
     canteens = adminChecker.find({'canteen':data['canteen']})
     l = 0
     for _ in canteens:
@@ -113,7 +114,7 @@ def login_admin():
         menu = []
         for m in menuInstance.db.menu.find():
             menu.append(m['name'])
-            price[m['']]
+            # price[m['']]
         print(menu)
         return render_template('main.html',items = menu,length = len(menu))
         
@@ -130,4 +131,4 @@ def pay():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
