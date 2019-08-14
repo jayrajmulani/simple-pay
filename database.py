@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, render_template, request
 from flask_pymongo import PyMongo
-
+import qrcode
+import os
+import time
 app = Flask(__name__)
 paymentInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/payment")
 adminInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/admin")
@@ -111,26 +113,23 @@ def login_admin():
             success = False
     price = {}
     if success:
-        menu = []
-        for m in menuInstance.db.menu.find():
-            menu.append(m['name'])
-            # price[m['']]
-        print(menu)
-        return render_template('main.html',items = menu,length = len(menu))
-        
+        menuloader = menuInstance.db.menu
+        its = []
+        for i in menuloader.find():
+            item = {}
+            item['item_name'] = i['item_name']
+            item['item_code']  = i['item_code']
+            item['price'] = i['price']
+            print('-------------->', i)
+            its.append(item)    
+        return render_template('cart.html',items = its,length = len(its))        
     else:
         return jsonify({"Error":"Login failed.. Check Username Password"})
-
-
-
 
 @app.route("/pay")
 def pay():
     
     menuloader = menuInstance.db.menu
-    
-
-
     its = []
     for i in menuloader.find():
         item = {}
@@ -140,17 +139,14 @@ def pay():
         print('-------------->', i)
         its.append(item)
         #print("---> ", type(i))
-    
     return render_template('cart.html',items = its,length = len(its))
        
     #return jsonify({'items':items})
+
+
 @app.route('/transact', methods=['POST'])
 
 def transact():
-   # data = request.form
-    #print(data)
- #   print('Length of Data :',len(data))
-  #  print('First :', data['item'][0])
     menuloader = menuInstance.db.menu
     total =0
     d = request.form
@@ -168,21 +164,18 @@ def transact():
         total  += int(d['qty'][i])*int(item_price)
         print('Total Cost :',total)
 
-    qr = qrcode.QRCode(version=1,error_correction=qrcode.constants.ERROR_CORRECT_L,box_size=10,border=4,
-)   
+    qr = qrcode.QRCode(version=1,error_correction=qrcode.constants.ERROR_CORRECT_L,box_size=10,border=4)   
     data = {}
     data['cost'] = total
-    data['canteen'] = canteenF
+    data['canteen'] = 'K'
     qr.add_data(data)
     qr.make(fit=True)
-
+    curtime = int(round(time.time()*1000))
     img = qr.make_image(fill_color="black", back_color="white")
-    img_path = path +'/QRCode.jpg'
-    os.remove(img_path)
-    print("File Removed!")
+    img_path = './static/img/QRCode{}.jpg'.format(curtime)
     img.save(img_path)
 
-    return render_template('QRCode.html')
+    return render_template('QRCode.html',t = curtime)
     
 
 

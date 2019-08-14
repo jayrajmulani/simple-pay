@@ -1,241 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <title>Bootstrap Example</title>
+  <title>Cart</title>
   <meta charset="utf-8">
+  <link href="../static/img/shopping.png" rel="icon">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-<style type="text/css">
-  td{
-    padding-right: 80px;
-    padding-top: 20px;
-  }
-  tr{
+  <style type="text/css">
+    td {
+      padding-right: 80px;
+      padding-top: 20px;
+    }
 
-  }
-</style>
+    #scroll {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      background-color: #3498db;
+      text-indent: -9999px;
+      display: none;
+      -webkit-border-radius: 60px;
+      -moz-border-radius: 60px;
+      border-radius: 60px
+    }
+
+    #scroll span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -12px;
+      height: 0;
+      width: 0;
+      border: 8px solid transparent;
+      border-bottom-color: #ffffff;
+    }
+
+    #scroll:hover {
+      background-color: #104461;
+      opacity: 1;
+      filter: "alpha(opacity=100)";
+      -ms-filter: "alpha(opacity=100)";
+    }
+
+    .navbar {
+      margin-bottom: 0;
+      background-color: #104461;
+      border-radius: 0;
+      padding: 1% 0;
+      font-size: 1.2em;
+      border: 0;
+    }
+
+    .navbar-brand {
+      float: left;
+    }
+
+    .teamImage {
+      height: 300px;
+      width: 300px;
+      margin: 1% auto;
+      border-radius: 100%;
+    }
+
+    #team {
+      border: 1px solid #104461;
+      border-radius: 20px;
+    }
+
+    #head1 {
+      color: #104461;
+      font-size: 3em;
+      font-family: cursive;
+      font-weight: bold;
+    }
+
+    #head2 {
+      color: #16A0E9;
+      font-weight: bold;
+      font-size: 3.5em;
+    }
+
+    body {
+      background-color: white;
+    }
+
+    #icon {
+      max-height: 100px;
+      max-width: 100px;
+      border-radius: 100%;
+    }
+
+    #formContent {
+      display: inline-block;
+      padding: 50px;
+      margin: 50px;
+      border: 1px solid black;
+      border-radius: 20px;
+    }
+  </style>
+  </style>
 </head>
+
 <body>
+  <nav class="navbar navbar-inverse" style="padding: 3%;">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a href="#" class="navbar-brand">
+          <p style="font-weight: bold; color: ivory">SIMPLEPAY</p>
+        </a>
+      </div>
+  </nav>
+  <div class="container">
+    <form method="POST" action="/transact">
 
-<div class="container">
-  <form method = "POST" action="/transact">
+      <h2>Select Item </h2>
+      <table id='itemtable' border='0'>
+        <tr>
+          <td>
+            <label for="sel1">Select list (select one):</label>
+            <select class="form-control" class="selectpicker" data-live-search="true" id="sel1"
+              onchange="calculate_cost(1)" name='item'>
+              {%for item in items%}
+              <option value="{{item.item_name}}">{{ item.item_name }}</option>
+              {%endfor%}
+            </select>
+          </td>
+          <td>
+            <label for="qty1"> Quantity </label>
 
-  <h2>Select Item </h2>
-  <table id='itemtable' border = '0'>
-
-    <!-- <div class="parent_div" id = "parent_div"> -->
-      <tr>
-      <td>
-        <!-- <div class="form-group"  style="width :60% ; float :left;display: inline"> -->
-        <label for="sel1">Select list (select one):</label>
-        
-
-          <select class="form-control" class="selectpicker" data-live-search="true" id="sel1" onchange="calculate_cost(1)" name = 'item'>
-           {%for item in items%}
-      
-            <option value ="{{item.item_name}}">{{ item.item_name }}</option>
-          
-
-            {%endfor%}
-          </select>
-        <!-- </div> -->
-      </td>
-      <td >
-        <!-- <div class="form-group"  style="width :30% ; float :left;display: inline;margin-left: 5% "> -->
-          <label for="qty1" >  Quantity </label>
-      
-          <input type ="number" min="1" name = "qty" placeholder="1" class="form-control" style="width :50% " onchange="calculate_cost(1)" id = "qty1" >  
-      <!-- </div> -->
-      </td>
-      <td>
-     <!-- <div class="form-group"  style="width :5% ; float :left ;display: inline ;margin-left: -20% "> -->
-        <label for="price1" >  Price </label><br>
-      
-        <div class="">
-
-            <p id = "price1">{{items[0].price}}</p>
-        <!-- </div> -->
-        
-        </div>
-      </td>
-      <td>
-      <!-- <div class="form-group"  style="width :5% ; float :left ;display: inline ;margin-left: -10% "> -->
-        <label for="create_button" >  Add </label><br>
-        <!-- <div class=""> -->
-
+            <input type="number" min="1" name="qty" placeholder="1" class="form-control" style="width :50% "
+              onchange="calculate_cost(1)" id="qty1">
+          </td>
+          <td>
+            <label for="price1"> Price </label><br>
+            <div class="">
+              <p id="price1">{{items[0].price}}</p>
+            </div>
+          </td>
+          <td>
+            <label for="create_button"> Add </label><br>
             <input class="btn btn-success" type="button" id="add_button1" value="+" onclick='button_action("1")'>
-        <!-- </div> -->
-        
-        <!--<a href="#">
-            <div class="glyphicon glyphicon-plus" id = "add"></div>
-        </a>-->
-      <!-- </div> -->
-     </td>
-   </tr>
-    <!-- </div>     -->
-  </table>
-  <input type="submit" class = "btn btn-success">
-</form>
+          </td>
+        </tr>
+      </table>
+      <br><br>
+      <p>
+        <p style="background-color: antiquewhite;padding: 1%" id="total">total: 0</p><br><input type="submit"
+          class="btn btn-success">
+      </p>
+    </form>
 
-      
-</div>
 
-            <p id = "total">Total : 0</p>
-        
-      
-  
+
+  </div>
+
+
+
+
+
 </body>
+
 </html>
 <script>
+    var i = 1;
 
-// var temp = '<div class="row form-group" id="child_div_append"><hr><div class="col-xs-12 col-lg-3"><div class="input-group" style=""><select class="form-control " id="employeetype"><option value="" disabled="" selected=""  >Select Job Type</option><option value="10">1</option><option value="10">2</option><option value="10">3</option> </select></div></div><div class="col-xs-12 col-lg-3" ><div class="input-group" ><input type="text" class="form-control" id="form-input-col-xs-3" placeholder="DD/MM/YYYY" /><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span></div></div><div class="col-xs-12 col-lg-3"><div class="input-group" ><input type="text" class="form-control" id="form-input-col-xs-4" placeholder=".00" /><span class="input-group-addon"><i class="glyphicon glyphicon-usd">2</i></span></div></div><button  onclick="remove(this)" type="button">Remove</button></div>';
+    var items = {{ items| tojson }};
 
+    var total = 0;
+    var total = 0;
+    function button_action(itr) {
 
-var i = 1;
-
-var items = {{ items|tojson }};
-
-
-
-
-
-
-var total = 0;
-var total = 0;
-function button_action(itr) {
-
-      var button = document.getElementById('add_button'+itr);
+      var button = document.getElementById('add_button' + itr);
       var table = document.getElementById("itemtable");
-    
-   
-      if(button.value == '-')
-        
-        {
 
-    table.deleteRow(parseInt(itr-1));
-    return;
 
-  }
-    console.log("function called");
-  //  console.log('button id :',button_id);
-    console.log('i : ',i );
-    i = i +1;
-    console.log('i : ',i );
-    
-    var row = table.insertRow(-1).innerHTML=`<tr>
-      <td>
-        
+      if (button.value == '-') {
 
-          <select class="form-control" class="selectpicker" data-live-search="true" id="sel`+i+`" onchange="calculate_cost(`+i+`)" name = 'item'>
-           {%for item in items%}
-      
-            <option value ="{{item.item_name}}">{{ item.item_name }}</option>
+        table.deleteRow(parseInt(itr - 1));
+        return;
+
+      }
+      console.log("function called");
+      //  console.log('button id :',button_id);
+      console.log('i : ', i);
+      i = i + 1;
+      console.log('i : ', i);
+
+      var row = table.insertRow(-1).innerHTML = `<tr>
+        <td>
           
 
-            {%endfor%}
-          </select>
+            <select class="form-control" class="selectpicker" data-live-search="true" id="sel`+ i + `" onchange="calculate_cost(` + i + `)" name = 'item'>
+            {%for item in items%}
+        
+              <option value ="{{item.item_name}}">{{ item.item_name }}</option>
+            
+
+              {%endfor%}
+            </select>
+        </td>
+        <td >
+        
+            <input type ="number" min="1" name = "qty" placeholder="1" class="form-control" style="width :50% " onchange="calculate_cost(`+ i + `)" id = "qty` + i + `" >  
+        </td>
+        <td>
+        
+          <div class="">
+
+              <p id = "price`+ i + `">{{items[0].price}}</p>
+        
+          
+          </div>
+        </td>
+        <td>
+        
+              <input class="btn btn-success" type="button" id="add_button`+ i + `" value="+" onclick='button_action(` + i + `)'>
+          
+          
+          
       </td>
-      <td >
-      
-          <input type ="number" min="1" name = "qty" placeholder="1" class="form-control" style="width :50% " onchange="calculate_cost(`+i+`)" id = "qty`+i+`" >  
-      </td>
-      <td>
-      
-        <div class="">
+    </tr>
 
-            <p id = "price`+i+`">{{items[0].price}}</p>
-      
-        
-        </div>
-      </td>
-      <td>
-       
-            <input class="btn btn-success" type="button" id="add_button`+i+`" value="+" onclick='button_action(`+i+`)'>
-        
-        
-        
-     </td>
-   </tr>
-
-    `
+      `
 
 
 
 
-    
-      if(button.value=='+')
 
-      {
+      if (button.value == '+') {
 
-      console.log("method called");    
-      button.value="-";
-      button.className="btn btn-danger";
-      
+        console.log("method called");
+        button.value = "-";
+        button.className = "btn btn-danger";
+
       }
 
     }
 
-function calculate_cost(itr)
-{
+    function calculate_cost(itr) {
 
-  item_element = document.getElementById('sel'+itr.toString(10));
-  qty_element = document.getElementById('qty'+itr.toString(10));
-  price_element = document.getElementById('price'+itr.toString(10));
+      item_element = document.getElementById('sel' + itr.toString(10));
+      qty_element = document.getElementById('qty' + itr.toString(10));
+      price_element = document.getElementById('price' + itr.toString(10));
 
-  console.log('Quantity elements : ', qty_element);
+      console.log('Quantity elements : ', qty_element);
 
-  console.log('Price elements : ', price_element);
-  console.log('itr : ',itr);
-  var price = 0;
-  var p =0;
+      console.log('Price elements : ', price_element);
+      console.log('itr : ', itr);
+      var price = 0;
+      var p = 0;
 
-   for(var i=0;i<items.length;i++)
-   {
+      for (var i = 0; i < items.length; i++) {
 
-      if(items[i].item_name == item_element.value)
-          {
+        if (items[i].item_name == item_element.value) {
           p = parseInt(items[i].price);
-          console.log("price :",p);
+          console.log("price :", p);
           break;
-           } 
-   }
-   console.log("Quantity elements : " + qty_element+" Itr : "+ itr);
-   price = parseInt(qty_element.value)*p;
-   price_element.innerHTML = price;
-   console.log('total in calculate_cost :'+total);
+        }
+      }
+      console.log("Quantity elements : " + qty_element + " Itr : " + itr);
+      price = parseInt(qty_element.value) * p;
+      price_element.innerHTML = price;
+      console.log('total in calculate_cost :' + total);
 
-   calculate_bill();
-   
-}
-var total = 0;
+      calculate_bill();
 
-
-
-function calculate_bill()
-{
-
-    var j=1;
+    }
     var total = 0;
 
-    while(j<=i)
-    {
-      price_element = document.getElementById('price'+j);
 
-     var p = price_element.innerHTML;
-     if(!isNaN(p))
-      total += parseInt(p);
-    j++;
+
+    function calculate_bill() {
+
+      var j = 1;
+      var total = 0;
+
+      while (j <= i) {
+        price_element = document.getElementById('price' + j);
+
+        var p = price_element.innerHTML;
+        if (!isNaN(p))
+          total += parseInt(p);
+        j++;
+      }
+
+      document.getElementById('total').innerHTML = 'Total: ' +total;
+
+
     }
-   
-    document.getElementById('total').innerHTML = total;
-
-
-}
 
     function remove(e) {
-        e.parentNode.remove();
+      e.parentNode.remove();
     }
-   
-  </script>
+
+</script>
