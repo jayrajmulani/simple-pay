@@ -122,10 +122,68 @@ def login_admin():
         return jsonify({"Error":"Login failed.. Check Username Password"})
 
 
-@app.route("/pay",methods = ['POST'])
-def pay():
-    pass
 
+
+@app.route("/pay")
+def pay():
+    
+    menuloader = menuInstance.db.menu
+    
+
+
+    its = []
+    for i in menuloader.find():
+        item = {}
+        item['item_name'] = i['item_name']
+        item['item_code']  = i['item_code']
+        item['price'] = i['price']
+        print('-------------->', i)
+        its.append(item)
+        #print("---> ", type(i))
+    
+    return render_template('cart.html',items = its,length = len(its))
+       
+    #return jsonify({'items':items})
+@app.route('/transact', methods=['POST'])
+
+def transact():
+   # data = request.form
+    #print(data)
+ #   print('Length of Data :',len(data))
+  #  print('First :', data['item'][0])
+    menuloader = menuInstance.db.menu
+    total =0
+    d = request.form
+    d = d.to_dict(flat=False)
+    item_price = 0
+
+    for i in range(0,len(d['item'])):
+        for j in menuloader.find({'item_name' : d['item'][i]}):
+            
+            print(j['price'],' type :',type(j['price']))
+
+            item_price= j['price']
+
+
+        total  += int(d['qty'][i])*int(item_price)
+        print('Total Cost :',total)
+
+    qr = qrcode.QRCode(version=1,error_correction=qrcode.constants.ERROR_CORRECT_L,box_size=10,border=4,
+)   
+    data = {}
+    data['cost'] = total
+    data['canteen'] = canteenF
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    img_path = path +'/QRCode.jpg'
+    os.remove(img_path)
+    print("File Removed!")
+    img.save(img_path)
+
+    return render_template('QRCode.html')
+    
 
 
 
