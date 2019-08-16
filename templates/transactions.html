@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Transactions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  
+</head>
+<body>
+
+   <nav class="navbar navbar-inverse" style="padding: 3%;">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a href="#" class="navbar-brand">
+          <p style="font-weight: bold; color: ivory">SIMPLEPAY</p>
+        </a>
+      </div>
+  </nav>
+<div>
+
+ <table class="table table-striped" style="width: 60%;margin-left: 20%">
+  <thead>
+    <tr>
+      <th scope="col">Trans. No.</th>
+      <th scope="col">From </th>
+      <th scope="col">Amount</th>
+      <th scope="col">Time</th>
+    </tr>
+  </thead>
+  <tbody>
+  	 {% for trans in transactions %}
+    <tr>
+      <th scope="row">{{ trans.no }}</th>
+      <td>{{ trans.from }}</td>
+      <td>{{ trans.amount }}</td>
+      <td>{{ trans.time }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>

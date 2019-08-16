@@ -3,11 +3,12 @@ from flask_pymongo import PyMongo
 import qrcode
 import os
 import time
+
 app = Flask(__name__)
 paymentInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/payment")
 adminInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/admin")
 menuInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/menu")
-
+transactInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/transactions")
 
 def get_menu():
     menuInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/menu")
@@ -178,8 +179,25 @@ def transact():
     return render_template('QRCode.html',t = curtime)
     
 
+@app.route('/showtransactions', methods=['POST'])
+
+def showtransactions():
+    t_num = 1
+    t = []
+    transactionsLoader = transactInstance.db.transactions
+    for i in transactionsLoader.find():
+        ts ={}
+        print('In the for loop')
+        ts['no'] = t_num
+        ts['from'] = i['from']
+        ts['amount'] = i['amount']
+        ts['time'] = i['time']
+        t.append(ts)
+        t_num = t_num + 1
+
+    return render_template('transactions.html', transactions = t)
 
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True)
