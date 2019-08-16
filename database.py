@@ -2,13 +2,18 @@ from flask import Flask, jsonify, render_template, request
 from flask_pymongo import PyMongo
 import qrcode
 import os
+import socket
 import time
+import datetime
 
 app = Flask(__name__)
 paymentInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/payment")
 adminInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/admin")
 menuInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/menu")
 transactInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/transactions")
+
+canteensInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/canteens")
+studentsInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/students")
 
 def get_menu():
     menuInstance = PyMongo(app,uri = "mongodb://127.0.0.1:27017/menu")
@@ -166,10 +171,18 @@ def transact():
         print('Total Cost :',total)
 
     qr = qrcode.QRCode(version=1,error_correction=qrcode.constants.ERROR_CORRECT_L,box_size=10,border=4)   
-    data = {}
-    data['cost'] = total
-    data['canteen'] = 'K'
-    qr.add_data(data)
+    # data = {}
+    # data['cost'] = total
+    # data['canteen'] = 'K'
+    
+    hostname = socket.gethostname()    
+    IP = socket.gethostbyname(hostname) 
+
+    qrdata = 'http://'+IP+":5000/deduct_amount " + str(total) + " K"
+    print(qrdata)
+
+    qr.add_data(qrdata)
+    
     qr.make(fit=True)
     curtime = int(round(time.time()*1000))
     img = qr.make_image(fill_color="black", back_color="white")
@@ -177,10 +190,9 @@ def transact():
     img.save(img_path)
 
     return render_template('QRCode.html',t = curtime)
-    
+
 
 @app.route('/showtransactions', methods=['POST'])
-
 def showtransactions():
     t_num = 1
     t = []
@@ -198,6 +210,54 @@ def showtransactions():
     return render_template('transactions.html', transactions = t)
 
 
+@app.route('/deduct_amount',methods=['POST'])
+def deduct():  
+    print("Deducted")
+    canteens = canteensInstance.db.canteens
+    students = studentsInstance.db.students
+    transactionsLoader = transactInstance.db.transactions
+    
+    d = request.form
+    d = d.to_dict(flat=False)
+    
+    canteenname = d['canteen'][0]
+    srollno = d['roll'][0]
+    amount = d['amount'][0]
+    c_balance = 0
+    s_balance = 0
+
+    for j in canteens.find({'CanteenName' :canteenname}):
+        print('--> ', j)
+        c_balance = (j['Balance'])
+        break
+
+    for j in students.find({'RollNo' :srollno}):
+        print('Students :-->',j)   
+        s_balance = (j['Balance'])
+        break
+    print('Canteen :',c_balance)
+    print('Student:',s_balance)
+
+    c_balance = c_balance + int(amount)
+    s_balance = s_balance - int(amount)
+    
+    d  = datetime.datetime.now()
+    cur_time = str(d.hour) +':'+str(d.minute)+':'+str(d.second)
+    transactionsLoader.insert({'from':srollno,'amount':amount,'time': cur_time})
+
+
+    print("New balances ",c_balance,s_balance)
+    canteens.update({'CanteenName':canteenname},{'$set':{'Balance':c_balance}})
+    students.update({'RollNo': srollno} , {'$set' :{'Balance':s_balance}})
+    print('Updated')
+    #for i inn canteens.find({'CanteenName' : 'K'}):
+
+    #r
+    return 'Success'
+
+
+ 
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
